@@ -6,7 +6,7 @@
 //const validator = require('validator') //przyzwanie npm
 const chalk = require('chalk')
 const yargs = require('yargs')
-const myNotes = require('./notes.js')
+const notes = require('./notes.js') //importing more than 1 func
 //const getNotes = myNotes()
 //console.log(getNotes)
 //console.log(chalk.yellow.inverse('ohoh!')) //ten chalk zainstalowalem folder wyzej, wiec w tym jsonie go nie ma
@@ -48,8 +48,10 @@ yargs.command({             //tworzymy obiekt typu komenda yargs
     },
     handler: function(argv){
        // console.log(chalk.yellow('Adding a new note with yargs!', argv)) //wywyolanie w konsoli "node app.js add --title "Tytul"
-        console.log(chalk.blue('Title: ' + argv.title)) //prints only title property instead of whole argv object
-        console.log(chalk.blue.inverse(`Let the ${argv.body} hit the floor!`)) //wow
+       // console.log(chalk.blue('Title: ' + argv.title)) //prints only title property instead of whole argv object
+        //console.log(chalk.blue.inverse(`Let the ${argv.body} hit the floor!`)) //wow
+
+        notes.addNote(argv.title, argv.body)
     }    
 })
 
@@ -57,8 +59,16 @@ yargs.command({             //tworzymy obiekt typu komenda yargs
 yargs.command({
     command: 'remove',
     describe: 'Removes a note',
-    handler: function(){
-        console.log(chalk.blue('Remove the note with yargs!'))
+    builder: {          //object
+        title: {        //object
+            describe: 'Removing note title', //objects property
+            demandOption: true,      //title is required now
+            type: 'string' //type of required value
+        }
+    },
+    handler: function(argv){
+        //console.log(chalk.blue('Remove the note with yargs!'))
+        notes.removeNote(argv.title)
     }
 })
 // add, remove, read, list
