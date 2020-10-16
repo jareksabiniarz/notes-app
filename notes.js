@@ -1,17 +1,9 @@
 const fs = require('fs')
 const chalk = require('chalk')
 
-const getNotes = function()
-{
-    return 'Your notes...'
-}
-
-const removeNote =function (title) {
+const removeNote = (title) => {
     const notes = loadNotes()
- 
-    const notesToKeep = notes.filter(function(note){ //creates new array with notes not to be removed
-        return note.title !== title //if the tilte is not consistent then keep this note
-    })
+    const notesToKeep = notes.filter((note) => note.title !== title)
    
     if (notes.length === notesToKeep.length){
         console.log(chalk.green.inverse('No note found!'))
@@ -21,35 +13,51 @@ const removeNote =function (title) {
     }
 
     saveNotes(notesToKeep)
-
-   
 }
 
-const addNote = function(title, body){
+const addNote = (title, body) => {
     const notes = loadNotes()
-    const duplicateNotes = notes.filter(function (note) { //checking if the title is not already used
-        return note.title === title  
-        }) //filter is array method
+    //const duplicateNotes = notes.filter((note) =>  note.title === title) 
+    const duplicateNote = notes.find((note) => note.title === title)
 
-    if (duplicateNotes.length === 0){   //if there is no such a title (value is 0)
-    notes.push({                    //push method on array argv notes
+    if (!duplicateNote){   
+    notes.push({                    
         title: title,
         body: body
         })
-    saveNotes(notes)                //savin the notes right after adding it
+    saveNotes(notes)                
     console.log(chalk.green('New note added!'))
     } else {
         console.log(chalk.red('Note title already exists!'))
     }
 }
 
-const  saveNotes = function(notes) {
+const readNote = (title) => {
+    const notes = loadNotes()
+    const findedNote = notes.find((note) =>  note.title === title)
+    if (findedNote){
+    console.log(chalk.yellow.inverse(findedNote.title) + ' ' + findedNote.body)
+    }
+    else {
+        console.log(chalk.red('No note found!'))
+    }
+}
+
+const listNotes = () => {
+    const notes = loadNotes()
+    console.log(chalk.blue.bold('Your notes: '))
+    notes.forEach((note) => {
+        console.log(chalk.yellow.bold(note.title))
+    })
+}
+
+const  saveNotes = (notes) => {
     const dataJSON = JSON.stringify(notes)
     fs.writeFileSync('notes.json', dataJSON)
 
 }
 
-const loadNotes= function(){
+const loadNotes= () => {
     try{
         const dataBuffer = fs.readFileSync('notes.json')
         const dataJSON = dataBuffer.toString()
@@ -62,9 +70,10 @@ const loadNotes= function(){
 
 }
 
-module.exports = {      //export multiple objects from module by exporting an object
-    getNotes: getNotes, //property name is not important, here it is the same as value (function) name
+module.exports = {      
     addNote: addNote,
-    removeNote: removeNote
+    removeNote: removeNote,
+    listNotes: listNotes,
+    readNote: readNote
     }
 
